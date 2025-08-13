@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "huntrr-admin": "i-canyon-marketing-app"
+  },
+  "targets": {
+    "i-canyon-marketing-app": {
+      "hosting": {
+        "huntrr-admin": [
+          "i-canyon-marketing-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
