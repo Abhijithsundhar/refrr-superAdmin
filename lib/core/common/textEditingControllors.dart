@@ -62,6 +62,26 @@ TextEditingController affiliateMoreInfoController = TextEditingController();
 TextEditingController affiliateAddMoneyController = TextEditingController();
 TextEditingController affiliateWithdrawalMoneyController = TextEditingController();
 
+///Agents
+
+TextEditingController agentsNameController = TextEditingController();
+TextEditingController agentsUserIdController = TextEditingController();
+TextEditingController agentsPasswordController = TextEditingController();
+TextEditingController agentsEmailController = TextEditingController();
+TextEditingController agentsPhoneNoController = TextEditingController();
+TextEditingController agentsCountryController = TextEditingController();
+TextEditingController agentsZoneController = TextEditingController();
+TextEditingController agentsLevelController = TextEditingController();
+TextEditingController agentsStatusController = TextEditingController();
+TextEditingController agentsLanguageController = TextEditingController();
+TextEditingController agentsQualificationController = TextEditingController();
+TextEditingController agentsExperienceController = TextEditingController();
+TextEditingController agentsIndustryController = TextEditingController();
+TextEditingController agentsMoreInfoController = TextEditingController();
+
+TextEditingController agentsAddMoneyController = TextEditingController();
+TextEditingController agentsWithdrawalMoneyController = TextEditingController();
+
 /// login
 TextEditingController loginEmailController = TextEditingController();
 TextEditingController loginPasswordController = TextEditingController();

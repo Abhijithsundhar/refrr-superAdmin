@@ -12,14 +12,14 @@ import '../Leads/Screens/view-firms.dart';
 import '../Leads/Screens/view-leads.dart';
 import '../home/homepage.dart';
 
-class FirmsPage extends ConsumerStatefulWidget {
+class AgentPage extends ConsumerStatefulWidget {
 
 
   @override
   _LeadsTablePageState createState() => _LeadsTablePageState();
 }
 
-class _LeadsTablePageState extends ConsumerState<FirmsPage> {
+class _LeadsTablePageState extends ConsumerState<AgentPage> {
   int currentPage = 0;
   final int rowsPerPage = 10;
   String searchQuery = "";

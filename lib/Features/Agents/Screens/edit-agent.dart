@@ -1,0 +1,521 @@
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:huntrradminweb/core/common/textEditingControllors.dart';
+import 'package:huntrradminweb/model/agent_model.dart';
+import '../../../core/common/alertbox.dart';
+import '../../../core/common/image-Picker.dart';
+import '../../../core/common/lodings.dart';
+import '../../../core/common/search.dart';
+import '../../../core/common/snackbar.dart';
+import '../../../core/globelvariable.dart';
+import '../../home/homepage.dart';
+import '../Controllors/agent-controllor.dart';
+
+class EditAgentAlertBox extends StatefulWidget {
+  final AgentModel agent;
+  const EditAgentAlertBox({super.key, required this.agent});
+
+  @override
+  State<EditAgentAlertBox> createState() => _EditAgentAlertBoxState();
+}
+
+class _EditAgentAlertBoxState extends State<EditAgentAlertBox> {
+  PickedImage? pickedProfile ;
+  String? profileUrl;
+  @override
+  @override
+  void initState() {
+    super.initState();
+
+    // Map status int to string
+    final statusMap = {
+      0: 'pending',
+      1: 'approved',
+      2: 'suspended',
+    };
+
+    agentsStatusController.text = statusMap[widget.agent.status] ?? 'pending';
+    agentsLevelController.text = widget.agent.level;
+    agentsEmailController.text = widget.agent.mailId;
+    agentsPasswordController.text = widget.agent.password;
+    agentsUserIdController.text = widget.agent.userId;
+    agentsZoneController.text = widget.agent.zone.trim();
+    agentsPhoneNoController.text = widget.agent.phone;
+    agentsNameController.text = widget.agent.name;
+    agentsCountryController.text = widget.agent.country;
+    agentsLanguageController.text = widget.agent.language.trim();
+    profileUrl = widget.agent.profile ?? '';
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.all(width * 0.05), // padding around the dialog
+      child: Container(
+        width: width * 0.5,
+        height: height * 0.85,
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(247, 247, 250, 1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // AppBar
+            AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leadingWidth: 200,
+              leading: Padding(
+                padding: EdgeInsets.only(left: width * .01),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Agent',
+                    style: GoogleFonts.firaSansCondensed(
+                      fontSize: width * .01,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                Padding(
+                  padding: EdgeInsets.only(right: width * .01),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.black,
+                        size: width * .015,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Bottom line after AppBar
+            Container(
+              height: height * .002,
+              color: Colors.grey[300],
+            ),
+
+            // GENERAL INFORMATION TITLE
+            Padding(
+              padding: EdgeInsets.only(
+                left: width * .13,
+                bottom: height * .015,
+              ),
+              child: Container(
+                width: width * .4,
+                height: height * .05,
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'GENERAL INFORMATION',
+                    style: GoogleFonts.firaSansCondensed(
+                      fontSize: width * .008,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Content Section
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Logo Section
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: height * .01,
+                      left: width * .01,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: width * .002),
+                          child: Text(
+                            'Photo',
+                            style: GoogleFonts.firaSansCondensed(
+                              fontSize: width * .008,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: height * .002),
+                        Container(
+                          width: width * .1,
+                          height: height * .15,
+                          color: Colors.white,
+                          child: InkWell(
+                            onTap: () async {
+                              final picked = await ImagePickerHelper.pickImage();
+                              if (picked != null) {
+                                setState(() {
+                                  pickedProfile = picked;
+                                });
+                              } else {
+                                print("No image selected.");
+                              }
+                            },
+                            child: Builder(
+                              builder: (_) {
+                                if (pickedProfile != null) {
+                                  // ✅ Show picked image in round shape
+                                  return CircleAvatar(
+                                    radius: width*.03,
+                                    backgroundImage: MemoryImage(pickedProfile!.bytes),
+                                  );
+                                } else if (widget.agent.profile != null && widget.agent.profile.isNotEmpty) {
+                                  // ✅ Show Firebase image (from URL) in round shape
+                                  return CircleAvatar(radius: width*.03,
+                                    backgroundImage: NetworkImage(widget.agent.profile),
+                                    onBackgroundImageError: (error, stackTrace) {
+                                      // Handle error by using fallback image below
+                                    },
+                                    child: Container(), // Still needs a child to trigger fallback in error
+                                  );
+                                } else {
+                                  // ✅ Show fallback default image in round shape
+                                  return CircleAvatar(radius: width*.03,
+                                    backgroundImage: AssetImage('assets/images/defualtprofile.png'),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  /// Info Fields Section
+                  Padding(
+                    padding: EdgeInsets.only(left: width * .03),
+                    child: SizedBox(
+                      width: width * .35,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                // Expanded(child: labelWithField('Sl. No')),
+                                // SizedBox(width: width * .01),
+                                Expanded(child: labelWithField('Name',controller: agentsNameController)),
+                                SizedBox(width: width * .01),
+                                Expanded(child: labelWithField('Phone NO',controller: agentsPhoneNoController)),
+
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: labelWithField('User ID',controller: agentsUserIdController)),
+                                SizedBox(width: width * .01),
+                                Expanded(child: labelWithField('Password',controller: agentsPasswordController)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: labelWithField('Email',controller: agentsEmailController)),
+                                SizedBox(width: width * .01),
+                                Expanded(child: labelWithField('Language',controller: agentsLanguageController,
+                                  options: ['English', 'Hindi', 'Malayalam','Arabic'],)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: labelWithField('Country',controller: agentsCountryController,
+                                  options: ['India', 'UAE', 'Abu Dhabi','Qatar','Bahrain'],)),
+                                SizedBox(width: width * .01),
+                                Expanded(child: labelWithField('Zone',controller: agentsZoneController,
+                                    options:['Manama', 'Muharraq', 'Northern Governorate', 'Southern Governorate','Central Governorate',
+                                      'Doha', 'Al Wakrah', 'Al Khor', 'Umm Salal', 'Al Rayyan','Abu Dhabi City',
+                                      'Al Ain', 'Al Dhafra',])),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: labelWithField('Level',controller: agentsLevelController,
+                                  options: ['01','02','03','04','05'],)),
+                                SizedBox(width: width * .01),
+                                Expanded(child: labelWithField('Status',controller: agentsStatusController,
+                                  options: ['pending','approved','suspended',],)),
+                              ],
+                            ),
+
+                            SizedBox(height: height * .02),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Consumer(builder: (context, ref, child) {
+                                return InkWell(
+                                  onTap: () async {
+                                    if (agentsNameController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Name');
+                                      return;
+                                    }
+                                    if (agentsPhoneNoController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Phone No');
+                                      return;
+                                    }
+                                    if (agentsUserIdController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter UserId');
+                                      return;
+                                    }
+                                    if (agentsPasswordController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Password');
+                                      return;
+                                    }
+                                    if (agentsEmailController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Email Id');
+                                      return;
+                                    }
+                                    if (agentsPhoneNoController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Language');
+                                      return;
+                                    }
+                                    if (agentsCountryController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Country');
+                                      return;
+                                    }
+                                    if (agentsZoneController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Zone');
+                                      return;
+                                    }if (agentsLevelController.text.isEmpty) {
+                                      showCommonSnackbar(context, 'Please Enter Level');
+                                      return;
+                                    }
+                                    showCustomAlertBox(
+                                      context,
+                                      'Do you want add this Agent?',
+                                          () async {
+                                        print('thottuuuuuuuuuuuuuuuuuu');
+                                        showLoadings(context);
+                                        String profileUrl = widget.agent.profile ?? '';
+                                        try {
+                                          if (pickedProfile != null) {
+                                            final uploadedUrl = await ImagePickerHelper.uploadImageToFirebase(pickedProfile!);
+                                            if (uploadedUrl != null) {
+                                              profileUrl = uploadedUrl;
+                                            } else {
+                                              showCommonSnackbar(context, 'Image upload failed');
+                                              hideLoading(context); // ✅ Ensure this is called
+                                              return;
+                                            }
+                                          }
+                                          int status;
+                                          final text = agentsStatusController.text.trim().toLowerCase();
+
+                                          if (text == 'pending') {
+                                            status = 0;
+                                          } else if (text == 'approved') {
+                                            status = 1;
+                                          } else if (text == 'suspended') {
+                                            status = 2;
+                                          } else {
+                                            status = 0; // default or fallback
+                                          }
+                                          print('Creating AdminModel...');
+                                          final AgentModel updateAgent = widget.agent.copyWith(
+                                              name: agentsNameController.text,
+                                              profile: profileUrl??'',
+                                              phone: agentsPhoneNoController.text,
+                                              zone: agentsZoneController.text,
+                                              userId: agentsUserIdController.text,
+                                              password: agentsPasswordController.text,
+                                              mailId: agentsEmailController.text,
+                                              level: agentsLevelController.text,
+                                              status: status,
+                                              country:agentsCountryController.text,
+                                              search: setSearchParam(
+                                                agentsNameController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsPhoneNoController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsUserIdController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsPasswordController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsCountryController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsZoneController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsEmailController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsLevelController.text.trim().toUpperCase() +
+                                                    ' ' +
+                                                    agentsStatusController.text.trim().toUpperCase(),
+                                              ),
+                                              language: agentsLanguageController.text) ;
+
+                                          print('Calling addAdmin...');
+                                          await ref.read(agentControllerProvider.notifier)
+                                              .updateAgent(context: context, agentModel: updateAgent);
+                                          print('addAdmin completed');
+
+                                          hideLoading(context);
+
+                                          // agentsStatusController.clear();
+                                          // agentsLevelController.clear();
+                                          // agentsEmailController.clear();
+                                          // agentsPasswordController.clear();
+                                          // agentsUserIdController.clear();
+                                          // agentsZoneController.clear();
+                                          // agentsPhoneNoController.clear();
+                                          // agentsNameController.clear();
+                                          // agentsCountryController.clear();
+                                          // setState(() {
+                                          //   pickedProfile = null;
+                                          // });
+                                          Navigator.pushReplacement(context,
+                                            MaterialPageRoute(builder: (context) => Home(initialTabIndex: 2,)),);
+
+
+                                        } catch (e) {
+                                          hideLoading(context);
+                                          print('Error during save: $e');
+                                          showCommonSnackbar(context, 'Something went wrong!');
+                                        }
+                                      },
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: width * .15,
+                                      vertical: height * .015,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'Save',
+                                      style: GoogleFonts.firaSansCondensed(
+                                        fontSize: width * .008,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },),
+                            ),
+                            SizedBox(height: height * .02),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget labelWithField(
+      String label, {
+        int maxLines = 1,
+        TextEditingController? controller,
+        List<String>? options, // 👈 new param
+      }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: height * .005),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.firaSansCondensed(
+              fontSize: width * .008,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: height * .005),
+
+          /// If options are provided, render Dropdown
+          if (options != null)
+            Container(
+              height: height * .05,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: width * .005),
+              alignment: Alignment.center,
+              child: DropdownButtonFormField<String>(
+                value: options.contains(controller!.text) ? controller.text : null,
+                items: options
+                    .map((item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: GoogleFonts.firaSansCondensed(
+                      fontSize: width * .008,
+                      color: const Color.fromRGBO(74, 77, 78, 1),
+                    ),
+                  ),
+                ))
+                    .toList(),
+                onChanged: (value) {
+                  controller.text = value!;
+                },
+                icon: const Icon(Icons.keyboard_arrow_down),
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                ),
+              ),
+            )
+
+          /// Else render TextField
+          else
+            Container(
+              height:
+              maxLines == 1 ? height * .05 : height * .05 * maxLines,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: width * .005),
+              alignment: Alignment.center,
+              child: TextField(
+                controller: controller,
+                maxLines: maxLines,
+                textAlignVertical: maxLines == 1
+                    ? TextAlignVertical.center
+                    : TextAlignVertical.top,
+                style: GoogleFonts.firaSansCondensed(
+                  fontSize: width * .008,
+                  color: const Color.fromRGBO(74, 77, 78, 1),
+                ),
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  isCollapsed: true,
+                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

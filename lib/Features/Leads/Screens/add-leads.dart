@@ -303,6 +303,7 @@ class _AddLeadsAlertBoxState extends State<AddLeadsAlertBox> {
 
                                             print('Creating AdminModel...');
                                             final LeadsModel leads = LeadsModel(
+                                              services: [],
                                                 logo: profileUrl ??'',
                                                 name: leadsFirmNameController.text ??'',
                                                 industry: leadsIndustryController.text ??'',

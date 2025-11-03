@@ -138,7 +138,7 @@ class _SideMenuState extends State<SideMenu> {
                               width: 10,
                             ),
                             Text(
-                              'Firms',
+                              'Agents',
                               style: GoogleFonts.firaSansCondensed(
                                 fontSize: width * 0.01,
                                 fontWeight: FontWeight.w500,
@@ -229,7 +229,7 @@ class _SideMenuState extends State<SideMenu> {
                         onHover: (value) {},
                         onTap: () {
                           setState(() {
-                            widget.tabController.animateTo((4));
+                            widget.tabController.animateTo((5));
                             subTab = 5;
                             selectedTab = 5;
                           });
@@ -263,7 +263,7 @@ class _SideMenuState extends State<SideMenu> {
                         onHover: (value) {},
                         onTap: () {
                           setState(() {
-                            widget.tabController.animateTo((5));
+                            widget.tabController.animateTo((6));
                             subTab = 6;
                             selectedTab = 6;
                           });

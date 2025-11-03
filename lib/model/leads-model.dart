@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:huntrradminweb/model/firm-model.dart';
+import 'package:huntrradminweb/model/services-model.dart';
 
 class LeadsModel {
   final String logo;
@@ -18,6 +19,7 @@ class LeadsModel {
   final DateTime createTime;
   final String addedBy;
   final List<AddFirmModel> firms;
+  final List<ServiceModel>? services;
   final int status; // ✅ New field
   final String affiliate; // ✅ New field
   final String password; // ✅ New field
@@ -40,6 +42,7 @@ class LeadsModel {
     required this.createTime,
     required this.addedBy,
     required this.firms,
+    required this.services,
     required this.status, // ✅ New field
     required this.affiliate, // ✅ New field
     required this.password, // ✅ New field
@@ -63,6 +66,7 @@ class LeadsModel {
     DateTime? createTime,
     String? addedBy,
     List<AddFirmModel>? firms,
+    List<ServiceModel>? services,
     int? status, // ✅ New field
     String? affiliate, // ✅ New field
     String? password, // ✅ New field
@@ -85,6 +89,7 @@ class LeadsModel {
       createTime: createTime ?? this.createTime,
       addedBy: addedBy ?? this.addedBy,
       firms: firms ?? this.firms,
+      services: services ?? this.services,
       status: status ?? this.status, // ✅ New field
       affiliate: affiliate ?? this.affiliate, // ✅ New field
       reference: reference ?? this.reference,
@@ -110,6 +115,7 @@ class LeadsModel {
       'createTime': Timestamp.fromDate(createTime),
       'addedBy': addedBy,
       'firms': firms.map((f) => f.toMap()).toList(),
+      'services': services?.map((f) => f.toMap()).toList(),
       'status': status,
       'affiliate': affiliate,
       'reference': reference,
@@ -136,6 +142,9 @@ class LeadsModel {
       addedBy: map['addedBy'] as String??'',
       firms: (map['firms'] as List<dynamic>)
           .map((e) => AddFirmModel.fromMap(e as Map<String, dynamic>))
+          .toList(),
+      services: (map['services'] as List<dynamic>)
+          .map((e) => ServiceModel.fromMap(e as Map<String, dynamic>))
           .toList(),
       status: map['status'] as int? ?? 0,
       affiliate: map['affiliate'] as String? ?? '',

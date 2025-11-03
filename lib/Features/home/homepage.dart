@@ -7,6 +7,7 @@ import '../../model/admin-model.dart';
 import '../Account/Screens/account-page.dart';
 import '../Admin/Screens/admin-page.dart';
 import '../Affiliates/Screens/affiliate-page.dart';
+import '../Agents/Screens/agent-page.dart';
 import '../Dashbord/dashbord.dart';
 import '../Leads/Screens/leads-page.dart';
 import '../Settings/settings.dart';
@@ -65,11 +66,11 @@ class _HomeState extends ConsumerState<Home> with SingleTickerProviderStateMixin
                     children: [
                       Dashboard(),//0
                       LeadsTablePage(), //1
-                      FirmsPage(),
-                      AffiliateTable(),//2
-                      AccountTable(),//3
-                      AdminTable(),//4,
-                      Settings(),//5
+                      AgentsTable(),//2
+                      AffiliateTable(),//3
+                      AccountTable(),//4
+                      AdminTable(),//5
+                      Settings(),//6
 
                     ],
                   ))
